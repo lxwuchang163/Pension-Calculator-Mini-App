@@ -15,11 +15,11 @@ export default function Home() {
   const [formData, setFormData] = useState<FormData>({
     province: '北京市',
     city: '北京市',
-    age: 30,
+    age: 0,
     gender: 'male',
-    monthlySalary: 10000,
-    yearsOfPayment: 5,
-    personalAccountBalance: 48000,
+    monthlySalary: 0,
+    yearsOfPayment: 0,
+    personalAccountBalance: 0,
     freezeYears: 0,
   });
 
@@ -157,11 +157,12 @@ export default function Home() {
                 </label>
                 <input
                   type="number"
-                  value={formData.age}
-                  onChange={(e) => setFormData({ ...formData, age: parseInt(e.target.value) || 0 })}
+                  value={formData.age || ''}
+                  onChange={(e) => setFormData({ ...formData, age: e.target.value ? parseInt(e.target.value) : 0 })}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
                   min="18"
                   max="60"
+                  placeholder="请输入"
                 />
               </div>
               <div>
@@ -202,10 +203,10 @@ export default function Home() {
               </label>
               <input
                 type="number"
-                value={formData.monthlySalary}
-                onChange={(e) => setFormData({ ...formData, monthlySalary: parseInt(e.target.value) || 0 })}
+                value={formData.monthlySalary || ''}
+                onChange={(e) => setFormData({ ...formData, monthlySalary: e.target.value ? parseInt(e.target.value) : 0 })}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
-                min="0"
+                placeholder="请输入"
               />
             </div>
 
@@ -218,11 +219,10 @@ export default function Home() {
                 </label>
                 <input
                   type="number"
-                  value={formData.yearsOfPayment}
-                  onChange={(e) => setFormData({ ...formData, yearsOfPayment: parseInt(e.target.value) || 0 })}
+                  value={formData.yearsOfPayment || ''}
+                  onChange={(e) => setFormData({ ...formData, yearsOfPayment: e.target.value ? parseInt(e.target.value) : 0 })}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
-                  min="0"
-                  max="40"
+                  placeholder="请输入"
                 />
               </div>
               <div>
@@ -232,11 +232,10 @@ export default function Home() {
                 </label>
                 <input
                   type="number"
-                  value={formData.freezeYears}
-                  onChange={(e) => setFormData({ ...formData, freezeYears: parseInt(e.target.value) || 0 })}
+                  value={formData.freezeYears || ''}
+                  onChange={(e) => setFormData({ ...formData, freezeYears: e.target.value ? parseInt(e.target.value) : 0 })}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
-                  min="0"
-                  max="30"
+                  placeholder="请输入"
                 />
               </div>
             </div>
@@ -249,10 +248,10 @@ export default function Home() {
               </label>
               <input
                 type="number"
-                value={formData.personalAccountBalance}
-                onChange={(e) => setFormData({ ...formData, personalAccountBalance: parseInt(e.target.value) || 0 })}
+                value={formData.personalAccountBalance || ''}
+                onChange={(e) => setFormData({ ...formData, personalAccountBalance: e.target.value ? parseInt(e.target.value) : 0 })}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
-                min="0"
+                placeholder="请输入"
               />
             </div>
           </div>
