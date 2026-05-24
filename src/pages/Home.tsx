@@ -21,6 +21,9 @@ export default function Home() {
     yearsOfPayment: 0,
     personalAccountBalance: 0,
     freezeYears: 0,
+    transitionAdjustmentFund: 0,
+    basicPensionSubsidy: 0,
+    other: 0,
   });
 
   const [result, setResult] = useState<CalculationResult | null>(null);
@@ -58,13 +61,16 @@ export default function Home() {
     labels: [
       `基础养老金 ¥${result.basicPension.toLocaleString()} (${((result.basicPension / result.totalPension) * 100).toFixed(1)}%)`,
       `个人账户养老金 ¥${result.personalAccountPension.toLocaleString()} (${((result.personalAccountPension / result.totalPension) * 100).toFixed(1)}%)`,
-      `过渡性养老金 ¥${result.transitionPension.toLocaleString()} (${((result.transitionPension / result.totalPension) * 100).toFixed(1)}%)`
+      `过渡性养老金 ¥${result.transitionPension.toLocaleString()} (${((result.transitionPension / result.totalPension) * 100).toFixed(1)}%)`,
+      `过渡性调节金 ¥${result.transitionAdjustmentFund.toLocaleString()} (${((result.transitionAdjustmentFund / result.totalPension) * 100).toFixed(1)}%)`,
+      `基本养老金补贴 ¥${result.basicPensionSubsidy.toLocaleString()} (${((result.basicPensionSubsidy / result.totalPension) * 100).toFixed(1)}%)`,
+      `其他 ¥${result.other.toLocaleString()} (${((result.other / result.totalPension) * 100).toFixed(1)}%)`
     ],
     datasets: [
       {
-        data: [result.basicPension, result.personalAccountPension, result.transitionPension],
-        backgroundColor: ['#FF6B35', '#F7931E', '#FFD700'],
-        borderColor: ['#ffffff', '#ffffff', '#ffffff'],
+        data: [result.basicPension, result.personalAccountPension, result.transitionPension, result.transitionAdjustmentFund, result.basicPensionSubsidy, result.other],
+        backgroundColor: ['#FF6B35', '#F7931E', '#FFD700', '#9ACD32', '#20B2AA', '#4169E1'],
+        borderColor: ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff'],
         borderWidth: 2,
       },
     ],
@@ -258,6 +264,49 @@ export default function Home() {
                 placeholder="请输入"
               />
             </div>
+
+            {/* Additional Fields */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
+                  <DollarSign size={18} />
+                  过渡性调节金 (元)
+                </label>
+                <input
+                  type="number"
+                  value={formData.transitionAdjustmentFund || ''}
+                  onChange={(e) => setFormData({ ...formData, transitionAdjustmentFund: e.target.value ? parseInt(e.target.value) : 0 })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
+                  placeholder="请输入"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
+                  <DollarSign size={18} />
+                  基本养老金补贴 (元)
+                </label>
+                <input
+                  type="number"
+                  value={formData.basicPensionSubsidy || ''}
+                  onChange={(e) => setFormData({ ...formData, basicPensionSubsidy: e.target.value ? parseInt(e.target.value) : 0 })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
+                  placeholder="请输入"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
+                <DollarSign size={18} />
+                其他 (元)
+              </label>
+              <input
+                type="number"
+                value={formData.other || ''}
+                onChange={(e) => setFormData({ ...formData, other: e.target.value ? parseInt(e.target.value) : 0 })}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
+                placeholder="请输入"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -345,6 +394,39 @@ export default function Home() {
                     </div>
                     <p className="text-[#DAA520] text-2xl font-bold">
                       ¥{result.transitionPension.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                <div className="bg-green-50 rounded-xl p-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-[#1D3557] text-sm">过渡性调节金</p>
+                      <p className="text-gray-500 text-xs mt-1">根据当地政策发放的调节金</p>
+                    </div>
+                    <p className="text-[#9ACD32] text-2xl font-bold">
+                      ¥{result.transitionAdjustmentFund.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                <div className="bg-cyan-50 rounded-xl p-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-[#1D3557] text-sm">基本养老金补贴</p>
+                      <p className="text-gray-500 text-xs mt-1">对特定人群发放的补贴</p>
+                    </div>
+                    <p className="text-[#20B2AA] text-2xl font-bold">
+                      ¥{result.basicPensionSubsidy.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                <div className="bg-blue-50 rounded-xl p-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-[#1D3557] text-sm">其他</p>
+                      <p className="text-gray-500 text-xs mt-1">其他补充项目</p>
+                    </div>
+                    <p className="text-[#4169E1] text-2xl font-bold">
+                      ¥{result.other.toLocaleString()}
                     </p>
                   </div>
                 </div>

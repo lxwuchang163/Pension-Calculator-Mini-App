@@ -557,6 +557,9 @@ export interface CalculationResult {
   basicPension: number;
   personalAccountPension: number;
   transitionPension: number;
+  transitionAdjustmentFund: number; // 过渡性调节金
+  basicPensionSubsidy: number; // 基本养老金补贴
+  other: number; // 其他
   totalPension: number;
   replacementRate: number;
 }
@@ -570,6 +573,9 @@ export interface FormData {
   yearsOfPayment: number;
   personalAccountBalance: number;
   freezeYears: number; // 视同缴费年限
+  transitionAdjustmentFund: number; // 过渡性调节金
+  basicPensionSubsidy: number; // 基本养老金补贴
+  other: number; // 其他
 }
 
 export function calculatePension(formData: FormData): CalculationResult {
@@ -592,13 +598,20 @@ export function calculatePension(formData: FormData): CalculationResult {
   
   const transitionPension = (region.avgSalary * avgIndex * (formData.freezeYears || region.freezeYears) * (region.transitionRate || 1.2) / 100);
   
-  const totalPension = basicPension + personalAccountPension + transitionPension;
+  const transitionAdjustmentFund = formData.transitionAdjustmentFund || 0;
+  const basicPensionSubsidy = formData.basicPensionSubsidy || 0;
+  const other = formData.other || 0;
+  
+  const totalPension = basicPension + personalAccountPension + transitionPension + transitionAdjustmentFund + basicPensionSubsidy + other;
   const replacementRate = (totalPension / formData.monthlySalary) * 100;
   
   return {
     basicPension: Math.round(basicPension),
     personalAccountPension: Math.round(personalAccountPension),
     transitionPension: Math.round(transitionPension),
+    transitionAdjustmentFund: Math.round(transitionAdjustmentFund),
+    basicPensionSubsidy: Math.round(basicPensionSubsidy),
+    other: Math.round(other),
     totalPension: Math.round(totalPension),
     replacementRate: Math.round(replacementRate * 10) / 10,
   };
