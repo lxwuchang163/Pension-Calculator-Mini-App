@@ -45,6 +45,11 @@ export default function Home() {
   };
 
   const handleCalculate = () => {
+    // 验证年龄不低于18岁
+    if (formData.age < 18) {
+      alert('当前年龄不能低于18岁');
+      return;
+    }
     const calcResult = calculatePension(formData);
     setResult(calcResult);
     setShowResult(true);
@@ -165,12 +170,20 @@ export default function Home() {
                 <input
                   type="number"
                   value={formData.age || ''}
-                  onChange={(e) => setFormData({ ...formData, age: e.target.value ? parseInt(e.target.value) : 0 })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
+                  onChange={(e) => {
+                    const val = e.target.value ? parseInt(e.target.value) : 0;
+                    setFormData({ ...formData, age: val });
+                  }}
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-colors ${
+                    formData.age > 0 && formData.age < 18 ? 'border-red-400' : 'border-gray-200 focus:border-[#FF6B35]'
+                  }`}
                   min="18"
                   max="60"
-                  placeholder="请输入"
+                  placeholder="请输入(不低于18岁)"
                 />
+                {formData.age > 0 && formData.age < 18 && (
+                  <p className="text-red-500 text-xs mt-1">年龄不能低于18岁</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
@@ -310,9 +323,6 @@ export default function Home() {
                 <p className="text-white text-sm opacity-90 mb-1">预计月养老金</p>
                 <p className="text-white text-4xl font-bold">
                   ¥{result.totalPension.toLocaleString()}
-                </p>
-                <p className="text-orange-100 text-sm mt-1">
-                  替代率 {result.replacementRate}%
                 </p>
               </div>
 
