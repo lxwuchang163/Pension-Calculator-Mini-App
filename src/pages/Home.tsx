@@ -21,6 +21,7 @@ export default function Home() {
     yearsOfPayment: 0,
     personalAccountBalance: 0,
     freezeYears: 0,
+    averageSalaryIndex: 1,
   });
 
   const [result, setResult] = useState<CalculationResult | null>(null);
@@ -273,6 +274,23 @@ export default function Home() {
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
                 placeholder="请输入"
               />
+            </div>
+            
+            {/* Average Salary Index */}
+            <div>
+              <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
+                <Calculator size={18} />
+                平均缴费指数
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                value={formData.averageSalaryIndex || ''}
+                onChange={(e) => setFormData({ ...formData, averageSalaryIndex: e.target.value ? parseFloat(e.target.value) : 1 })}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
+                placeholder="请输入（通常0.6-3）"
+              />
+              <p className="text-gray-500 text-xs mt-1">指数越高，基础养老金越高</p>
             </div>
           </div>
         </div>
