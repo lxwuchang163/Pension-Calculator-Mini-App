@@ -573,9 +573,6 @@ export interface FormData {
   yearsOfPayment: number;
   personalAccountBalance: number;
   freezeYears: number; // 视同缴费年限
-  transitionAdjustmentFund: number; // 过渡性调节金
-  basicPensionSubsidy: number; // 基本养老金补贴
-  other: number; // 其他
 }
 
 export function calculatePension(formData: FormData): CalculationResult {
@@ -598,9 +595,9 @@ export function calculatePension(formData: FormData): CalculationResult {
   
   const transitionPension = (region.avgSalary * avgIndex * (formData.freezeYears || region.freezeYears) * (region.transitionRate || 1.2) / 100);
   
-  const transitionAdjustmentFund = formData.transitionAdjustmentFund || 0;
-  const basicPensionSubsidy = formData.basicPensionSubsidy || 0;
-  const other = formData.other || 0;
+  const transitionAdjustmentFund = 0;
+  const basicPensionSubsidy = 0;
+  const other = 0;
   
   const totalPension = basicPension + personalAccountPension + transitionPension + transitionAdjustmentFund + basicPensionSubsidy + other;
   const replacementRate = (totalPension / formData.monthlySalary) * 100;

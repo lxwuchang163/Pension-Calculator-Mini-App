@@ -21,9 +21,6 @@ export default function Home() {
     yearsOfPayment: 0,
     personalAccountBalance: 0,
     freezeYears: 0,
-    transitionAdjustmentFund: 0,
-    basicPensionSubsidy: 0,
-    other: 0,
   });
 
   const [result, setResult] = useState<CalculationResult | null>(null);
@@ -260,49 +257,6 @@ export default function Home() {
                 type="number"
                 value={formData.personalAccountBalance || ''}
                 onChange={(e) => setFormData({ ...formData, personalAccountBalance: e.target.value ? parseInt(e.target.value) : 0 })}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
-                placeholder="请输入"
-              />
-            </div>
-
-            {/* Additional Fields */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
-                  <DollarSign size={18} />
-                  过渡性调节金 (元)
-                </label>
-                <input
-                  type="number"
-                  value={formData.transitionAdjustmentFund || ''}
-                  onChange={(e) => setFormData({ ...formData, transitionAdjustmentFund: e.target.value ? parseInt(e.target.value) : 0 })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
-                  placeholder="请输入"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
-                  <DollarSign size={18} />
-                  基本养老金补贴 (元)
-                </label>
-                <input
-                  type="number"
-                  value={formData.basicPensionSubsidy || ''}
-                  onChange={(e) => setFormData({ ...formData, basicPensionSubsidy: e.target.value ? parseInt(e.target.value) : 0 })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
-                  placeholder="请输入"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
-                <DollarSign size={18} />
-                其他 (元)
-              </label>
-              <input
-                type="number"
-                value={formData.other || ''}
-                onChange={(e) => setFormData({ ...formData, other: e.target.value ? parseInt(e.target.value) : 0 })}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
                 placeholder="请输入"
               />
