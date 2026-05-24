@@ -6,7 +6,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { MapPin, Users, Calendar, DollarSign, PiggyBank, Calculator, ChevronDown } from 'lucide-react';
+import { MapPin, Users, Calendar, DollarSign, PiggyBank, Calculator, ChevronDown, Clock } from 'lucide-react';
 import { regionData, getProvinces, getCitiesByProvince, calculatePension, FormData, CalculationResult } from '../utils/regionData';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -20,6 +20,7 @@ export default function Home() {
     monthlySalary: 10000,
     yearsOfPayment: 5,
     personalAccountBalance: 48000,
+    freezeYears: 0,
   });
 
   const [result, setResult] = useState<CalculationResult | null>(null);
@@ -50,12 +51,12 @@ export default function Home() {
   };
 
   const chartData = result ? {
-    labels: ['基础养老金', '个人账户养老金'],
+    labels: ['基础养老金', '个人账户养老金', '过渡性养老金'],
     datasets: [
       {
-        data: [result.basicPension, result.personalAccountPension],
-        backgroundColor: ['#FF6B35', '#F7931E'],
-        borderColor: ['#ffffff', '#ffffff'],
+        data: [result.basicPension, result.personalAccountPension, result.transitionPension],
+        backgroundColor: ['#FF6B35', '#F7931E', '#FFD700'],
+        borderColor: ['#ffffff', '#ffffff', '#ffffff'],
         borderWidth: 2,
       },
     ],
@@ -194,19 +195,35 @@ export default function Home() {
             </div>
 
             {/* Years of Payment */}
-            <div>
-              <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
-                <Calendar size={18} />
-                已缴费年限 (年)
-              </label>
-              <input
-                type="number"
-                value={formData.yearsOfPayment}
-                onChange={(e) => setFormData({ ...formData, yearsOfPayment: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
-                min="0"
-                max="40"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
+                  <Calendar size={18} />
+                  实际缴费年限 (年)
+                </label>
+                <input
+                  type="number"
+                  value={formData.yearsOfPayment}
+                  onChange={(e) => setFormData({ ...formData, yearsOfPayment: parseInt(e.target.value) || 0 })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
+                  min="0"
+                  max="40"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
+                  <Clock size={18} />
+                  视同缴费年限 (年)
+                </label>
+                <input
+                  type="number"
+                  value={formData.freezeYears}
+                  onChange={(e) => setFormData({ ...formData, freezeYears: parseInt(e.target.value) || 0 })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors"
+                  min="0"
+                  max="30"
+                />
+              </div>
             </div>
 
             {/* Personal Account Balance */}
@@ -246,24 +263,45 @@ export default function Home() {
             </div>
 
             {/* Breakdown */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-orange-50 rounded-xl p-4 text-center">
-                <p className="text-[#1D3557] text-sm mb-1">基础养老金</p>
-                <p className="text-[#FF6B35] text-2xl font-bold">
-                  ¥{result.basicPension.toLocaleString()}
-                </p>
+            <div className="space-y-3 mb-6">
+              <div className="bg-orange-50 rounded-xl p-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-[#1D3557] text-sm">基础养老金</p>
+                    <p className="text-gray-500 text-xs mt-1">根据缴费年限和当地社会平均工资计算</p>
+                  </div>
+                  <p className="text-[#FF6B35] text-2xl font-bold">
+                    ¥{result.basicPension.toLocaleString()}
+                  </p>
+                </div>
               </div>
-              <div className="bg-orange-50 rounded-xl p-4 text-center">
-                <p className="text-[#1D3557] text-sm mb-1">个人账户</p>
-                <p className="text-[#F7931E] text-2xl font-bold">
-                  ¥{result.personalAccountPension.toLocaleString()}
-                </p>
+              <div className="bg-orange-50 rounded-xl p-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-[#1D3557] text-sm">个人账户养老金</p>
+                    <p className="text-gray-500 text-xs mt-1">个人缴费积累部分按月发放</p>
+                  </div>
+                  <p className="text-[#F7931E] text-2xl font-bold">
+                    ¥{result.personalAccountPension.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+              <div className="bg-yellow-50 rounded-xl p-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-[#1D3557] text-sm">过渡性养老金</p>
+                    <p className="text-gray-500 text-xs mt-1">建立账户前的视同缴费年限补贴</p>
+                  </div>
+                  <p className="text-[#DAA520] text-2xl font-bold">
+                    ¥{result.transitionPension.toLocaleString()}
+                  </p>
+                </div>
               </div>
             </div>
 
             {/* Chart */}
             {chartData && (
-              <div className="h-64">
+              <div className="h-72">
                 <Pie data={chartData} options={chartOptions} />
               </div>
             )}
