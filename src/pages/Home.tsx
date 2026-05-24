@@ -89,43 +89,46 @@ export default function Home() {
         {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
           <div className="space-y-6">
-            {/* Province Select */}
-            <div>
-              <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
-                <MapPin size={18} />
-                所在省份
-              </label>
-              <div className="relative">
-                <select
-                  value={formData.province}
-                  onChange={(e) => handleProvinceChange(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors bg-white appearance-none"
-                >
-                  {getProvinces().map((province) => (
-                    <option key={province} value={province}>{province}</option>
-                  ))}
-                </select>
-                <ChevronDown size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            {/* Province & City Select */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Province Select */}
+              <div>
+                <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
+                  <MapPin size={18} />
+                  所在省份
+                </label>
+                <div className="relative">
+                  <select
+                    value={formData.province}
+                    onChange={(e) => handleProvinceChange(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors bg-white appearance-none"
+                  >
+                    {getProvinces().map((province) => (
+                      <option key={province} value={province}>{province}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                </div>
               </div>
-            </div>
 
-            {/* City Select */}
-            <div>
-              <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
-                <MapPin size={18} />
-                所在城市
-              </label>
-              <div className="relative">
-                <select
-                  value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors bg-white appearance-none"
-                >
-                  {cities.map((city) => (
-                    <option key={city} value={city}>{city}</option>
-                  ))}
-                </select>
-                <ChevronDown size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              {/* City Select */}
+              <div>
+                <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
+                  <MapPin size={18} />
+                  所在城市
+                </label>
+                <div className="relative">
+                  <select
+                    value={formData.city}
+                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors bg-white appearance-none"
+                  >
+                    {cities.map((city) => (
+                      <option key={city} value={city}>{city}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                </div>
               </div>
             </div>
 
