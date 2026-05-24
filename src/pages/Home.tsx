@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -7,13 +7,14 @@ import {
   Legend,
 } from 'chart.js';
 import { MapPin, Users, Calendar, DollarSign, PiggyBank, Calculator, ChevronDown } from 'lucide-react';
-import { provinceData, calculatePension, FormData, CalculationResult } from '../utils/regionData';
+import { regionData, getProvinces, getCitiesByProvince, calculatePension, FormData, CalculationResult } from '../utils/regionData';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function Home() {
   const [formData, setFormData] = useState<FormData>({
     province: '北京市',
+    city: '北京市',
     age: 30,
     gender: 'male',
     monthlySalary: 10000,
@@ -23,6 +24,24 @@ export default function Home() {
 
   const [result, setResult] = useState<CalculationResult | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [cities, setCities] = useState<string[]>([]);
+
+  useEffect(() => {
+    const cityList = getCitiesByProvince(formData.province);
+    setCities(cityList.map(c => c.name));
+    if (!cityList.find(c => c.name === formData.city)) {
+      setFormData(prev => ({ ...prev, city: cityList[0]?.name || '' }));
+    }
+  }, [formData.province]);
+
+  const handleProvinceChange = (province: string) => {
+    const cityList = getCitiesByProvince(province);
+    setFormData(prev => ({
+      ...prev,
+      province,
+      city: cityList[0]?.name || ''
+    }));
+  };
 
   const handleCalculate = () => {
     const calcResult = calculatePension(formData);
@@ -74,16 +93,36 @@ export default function Home() {
             <div>
               <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
                 <MapPin size={18} />
-                所在地区
+                所在省份
               </label>
               <div className="relative">
                 <select
                   value={formData.province}
-                  onChange={(e) => setFormData({ ...formData, province: e.target.value })}
+                  onChange={(e) => handleProvinceChange(e.target.value)}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors bg-white appearance-none"
                 >
-                  {Object.keys(provinceData).map((province) => (
+                  {getProvinces().map((province) => (
                     <option key={province} value={province}>{province}</option>
+                  ))}
+                </select>
+                <ChevronDown size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* City Select */}
+            <div>
+              <label className="block text-sm font-semibold text-[#1D3557] mb-2 flex items-center gap-2">
+                <MapPin size={18} />
+                所在城市
+              </label>
+              <div className="relative">
+                <select
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF6B35] focus:outline-none transition-colors bg-white appearance-none"
+                >
+                  {cities.map((city) => (
+                    <option key={city} value={city}>{city}</option>
                   ))}
                 </select>
                 <ChevronDown size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
