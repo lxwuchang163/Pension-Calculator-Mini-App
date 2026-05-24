@@ -51,7 +51,11 @@ export default function Home() {
   };
 
   const chartData = result ? {
-    labels: ['基础养老金', '个人账户养老金', '过渡性养老金'],
+    labels: [
+      `基础养老金 ¥${result.basicPension.toLocaleString()} (${((result.basicPension / result.totalPension) * 100).toFixed(1)}%)`,
+      `个人账户养老金 ¥${result.personalAccountPension.toLocaleString()} (${((result.personalAccountPension / result.totalPension) * 100).toFixed(1)}%)`,
+      `过渡性养老金 ¥${result.transitionPension.toLocaleString()} (${((result.transitionPension / result.totalPension) * 100).toFixed(1)}%)`
+    ],
     datasets: [
       {
         data: [result.basicPension, result.personalAccountPension, result.transitionPension],
@@ -69,10 +73,21 @@ export default function Home() {
       legend: {
         position: 'bottom' as const,
         labels: {
-          padding: 20,
-          font: { size: 14 },
+          padding: 15,
+          font: { size: 12 },
+          usePointStyle: true,
+          pointStyle: 'circle',
         },
       },
+      tooltip: {
+        callbacks: {
+          label: function(context: any) {
+            const value = context.raw;
+            const percentage = ((value / result!.totalPension) * 100).toFixed(1);
+            return `¥${value.toLocaleString()} (${percentage}%)`;
+          }
+        }
+      }
     },
   };
 
@@ -301,7 +316,7 @@ export default function Home() {
 
             {/* Chart */}
             {chartData && (
-              <div className="h-72">
+              <div className="h-80">
                 <Pie data={chartData} options={chartOptions} />
               </div>
             )}
