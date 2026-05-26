@@ -310,4 +310,100 @@ export const regionData: ProvinceWithCities[] = [
     name: "河南省",
     cities: [
       { name: "郑州市", avgSalary: 8000, personalRate: 8, companyRate: 16, accountRate: 8, transitionRate: 1.3, freezeYears: 0, hasTransitionAdjustment: true, transitionAdjustmentAmount: 65, hasBasicSubsidy: true, basicSubsidyAmount: 85, accountGrowthRate: 5, salaryGrowthRate: 4 },
-      { name: "开封市", avgSalary: 6500, personalRate: 8, companyRate: 16, accountRate: 8, transitionRate: 1.3, freezeYears: 0, hasTransitionAdjustment: false, transitionAdjustmentAmount: 0, hasBasicSubsidy: true, basicSubsidyAmount: 68, accountGrowthRate: 4.5, salaryGrowthRate: 3.5
+      { name: "开封市", avgSalary: 6500, personalRate: 8, companyRate: 16, accountRate: 8, transitionRate: 1.3, freezeYears: 0, hasTransitionAdjustment: false, transitionAdjustmentAmount: 0, hasBasicSubsidy: true, basicSubsidyAmount: 68, accountGrowthRate: 4.5, salaryGrowthRate: 3.5 }
+    ]
+  }
+];
+
+export function getProvinces(): string[] {
+  return regionData.map(p => p.name);
+}
+
+export function getCitiesByProvince(provinceName: string): CityData[] {
+  const province = regionData.find(p => p.name === provinceName);
+  return province?.cities || [];
+}
+
+export function getCityData(provinceName: string, cityName: string): CityData | undefined {
+  const province = regionData.find(p => p.name === provinceName);
+  if (!province) return undefined;
+  return province.cities.find(c => c.name === cityName);
+}
+
+export interface CalculationResult {
+  basicPension: number;
+  personalAccountPension: number;
+  transitionPension: number;
+  transitionAdjustmentFund: number;
+  basicPensionSubsidy: number;
+  other: number;
+  totalPension: number;
+  replacementRate: number;
+}
+
+export interface FormData {
+  province: string;
+  city: string;
+  age: number;
+  gender: 'male' | 'female';
+  monthlySalary: number;
+  yearsOfPayment: number;
+  personalAccountBalance: number;
+  freezeYears: number;
+  averageSalaryIndex: number;
+}
+
+export function calculatePension(formData: FormData): CalculationResult {
+  const cityData = getCityData(formData.province, formData.city);
+  const region = cityData || { 
+    avgSalary: 6000, 
+    personalRate: 8, 
+    companyRate: 16, 
+    accountRate: 8, 
+    transitionRate: 1.2, 
+    freezeYears: 0,
+    hasTransitionAdjustment: false,
+    transitionAdjustmentAmount: 0,
+    hasBasicSubsidy: false,
+    basicSubsidyAmount: 0,
+    accountGrowthRate: 5,
+    salaryGrowthRate: 4
+  };
+  
+  const retirementAge = formData.gender === 'male' ? 60 : 55;
+  const remainingYears = Math.max(0, retirementAge - formData.age);
+  const totalYears = formData.yearsOfPayment + remainingYears;
+  const avgIndex = formData.averageSalaryIndex || 1;
+  
+  const futureAvgSalary = region.avgSalary * Math.pow(1 + region.salaryGrowthRate / 100, remainingYears);
+  const indexedAvgSalary = futureAvgSalary * avgIndex;
+  const basicPension = (futureAvgSalary + indexedAvgSalary) / 2 * totalYears * 0.01;
+  
+  let futureAccountBalance = formData.personalAccountBalance;
+  for (let i = 0; i < remainingYears; i++) {
+    const annualSalary = formData.monthlySalary * 12 * Math.pow(1 + region.salaryGrowthRate / 100, i);
+    const annualAccountDeposit = annualSalary * region.accountRate / 100;
+    futureAccountBalance = futureAccountBalance * (1 + region.accountGrowthRate / 100) + annualAccountDeposit;
+  }
+  
+  const months = formData.gender === 'male' ? 139 : 170;
+  const personalAccountPension = futureAccountBalance / months;
+  const transitionPension = futureAvgSalary * avgIndex * (formData.freezeYears || region.freezeYears) * (region.transitionRate || 1.2) / 100;
+  const transitionAdjustmentFund = region.hasTransitionAdjustment ? region.transitionAdjustmentAmount : 0;
+  const basicPensionSubsidy = region.hasBasicSubsidy ? region.basicSubsidyAmount : 0;
+  const other = 0;
+  
+  const totalPension = basicPension + personalAccountPension + transitionPension + transitionAdjustmentFund + basicPensionSubsidy + other;
+  const replacementRate = formData.monthlySalary > 0 ? (totalPension / formData.monthlySalary) * 100 : 0;
+  
+  return {
+    basicPension: Math.round(basicPension),
+    personalAccountPension: Math.round(personalAccountPension),
+    transitionPension: Math.round(transitionPension),
+    transitionAdjustmentFund: Math.round(transitionAdjustmentFund),
+    basicPensionSubsidy: Math.round(basicPensionSubsidy),
+    other: Math.round(other),
+    totalPension: Math.round(totalPension),
+    replacementRate: Math.round(replacementRate * 10) / 10,
+  };
+}
